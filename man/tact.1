@@ -1,0 +1,127 @@
+.\" -*- mode: nroff; coding: utf-8 -*-
+.TH tact 1 "April 2026" "tact 0.1.0" "User Commands"
+.SH NAME
+tact \- Rust 製ファイルマネージャー
+.SH SYNOPSIS
+.B tact
+.br
+.B tact --help
+.br
+.SH DESCRIPTION
+\fBtact\fRはTUIファイルマネージャーです。
+.SH INTERFACE
+.SS Path
+現在のディレクトリを表示。直接パスを入力して移動できます。
+.SS 左ペイン
+ディレクトリを表示。
+.SS 右ペイン
+カレントディレクトリの内容を表示。先頭行は常に「.」で、現在の場所を示します。
+
+ファイル/フォルダ名の表示はShift+左右矢印で横スクロールできます。
+.SS ステータスバー
+直近の操作結果やエラーメッセージ、表示件数などを表示します。
+.SH KEY BINDINGS
+.SS 共通操作
+.TP
+\fBCtrl+C\fR
+アプリ終了。
+.TP
+\fBF1\fR
+実行中に man/tact.1 を開き、閉じると元の画面に戻る。
+.TP
+\fBTab / Shift+Tab\fR
+パス/左ペイン/右ペインの順にフォーカスを順逆移動。
+.TP
+\fB↑ / ↓\fR
+現在フォーカス中のペインのカーソル移動。
+.TP
+\fB← / →\fR
+フォーカスに応じた動作（後述）。
+
+.SS Path
+.TP
+\fBEnter\fR
+入力したパスへ移動（相対パスはカレントディレクトリ基準）。
+.TP
+\fBSpace\fR （カーソルが☆/★ 上にあるとき）
+現在値をお気に入りに追加／削除。
+
+.SS 左ペイン
+.TP
+\fB↑ / ↓\fR
+可視ノード間移動。
+.TP
+\fB→\fR
+選択ディレクトリ展開。
+.TP
+\fB←\fR
+選択ディレクトリ折りたたみ。
+
+.SS 右ペイン
+.TP
+\fBEnter\fR
+選択ファイル/フォルダを開く。
+.TP
+\fBBackspace\fR
+親ディレクトリへ移動。
+.TP
+\fB→ / ←\fR
+履歴を進む/戻る。
+.TP
+\fBShift+↑ / Shift+↓\fR
+複数選択。
+.TP
+\fBDelete\fR
+選択中のファイル/ディレクトリを削除。
+.TP
+\fBk\fR
+新規フォルダを作成。
+.TP
+\fBe\fR
+「.」行選択時は空のテキストファイルを作成。ファイル選択時は Vim で開く。
+.TP
+\fBF2\fR
+リネームモーダルを開き、Enter で確定、Esc でキャンセル。
+.TP
+\fBm\fR
+移動モード開始。宛先として「.」行を選び Enter で移動、Esc でキャンセル。
+.TP
+\fBc\fR
+選択ファイル/フォルダをカレントディレクトリへコピー。
+.TP
+\fBF6\fR
+カレントディレクトリでシェルを開く。
+.TP
+\fBj\fR
+お気に入りポップアップを開く。
+.TP
+\fBh\fR
+履歴ポップアップを開く。
+.TP
+\fBS\fR / \fBShift+S\fR
+ソート順を昇順降順に切り替え/ソートキーを名前、更新日時で切り替え。
+.TP
+\fBf\fR
+検索モーダルを開く。ワイルドカード対応。Enter で検索、Esc で閉じる。
+.TP
+\fBShift+← / Shift+→\fR
+左右ペインおよび検索結果・ファイル一覧で横スクロール。
+
+.SS モーダル共通
+お気に入り/履歴/検索結果モーダルでは、↑↓で選択移動、Enter で決定、Esc で閉じる。
+
+検索結果モーダルでは Shift+←/→ で横スクロール、S/Shift+S でソート切り替え。
+
+.SS 移動履歴
+履歴は新しいエントリが上に来るよう逆順で表示、最大 100 件。
+
+存在しないパスはモーダル選択時にスキップ、自動的に履歴から除去。
+
+.SH FILES
+.TP
+\fBconfig.yaml\fR
+実行ファイルと同じディレクトリに作成される設定ファイル。お気に入りはfavoriteに保存されます。
+.SH SEE ALSO
+`tact --help` 
+.SH AUTHOR
+Maintained by the tact contributors.

@@ -1,0 +1,29 @@
+.env
+.env.*
+*.key
+*.pem
+*.tmp
+*.log
+*.cache
+
+# OS
+.DS_Store
+Thumbs.db
+
+#project
+ai-tasks/
+
+# Codex
+.codex/
+config.toml
+AGENTS.md
+auth.json
+
+# Claude Code
+.claude/
+.claude-cache/
+.claude-history/
+CLAUDE.md
+
+# Rust
+target/
