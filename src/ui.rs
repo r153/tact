@@ -26,7 +26,7 @@ pub fn render(frame: &mut Frame<'_>, app: &App) {
             ]
             .as_ref(),
         )
-        .split(frame.size());
+        .split(frame.area());
 
     render_path_bar(frame, chunks[0], app);
     render_main_panes(frame, chunks[1], app);
@@ -88,7 +88,7 @@ fn render_path_bar(frame: &mut Frame<'_>, area: Rect, app: &App) {
         let visible_offset = cursor_width.min(available);
         let cursor_x = area.x + 1 + visible_offset as u16;
         let cursor_y = area.y + 1;
-        frame.set_cursor(cursor_x, cursor_y);
+        frame.set_cursor_position((cursor_x, cursor_y));
     }
 }
 
@@ -112,7 +112,7 @@ fn render_favorites_modal(frame: &mut Frame<'_>, app: &App) {
     let mut state = ListState::default();
     state.select(app.favorites_popup_selected_visible_index());
 
-    let total_area = frame.size();
+    let total_area = frame.area();
     if total_area.width == 0 || total_area.height == 0 {
         return;
     }
@@ -174,7 +174,7 @@ fn render_history_modal(frame: &mut Frame<'_>, app: &App) {
     let mut state = ListState::default();
     state.select(app.history_popup_selected_visible_index());
 
-    let total_area = frame.size();
+    let total_area = frame.area();
     if total_area.width == 0 || total_area.height == 0 {
         return;
     }
@@ -214,7 +214,7 @@ fn render_history_modal(frame: &mut Frame<'_>, app: &App) {
 }
 
 fn render_rename_modal(frame: &mut Frame<'_>, app: &App) {
-    let total = frame.size();
+    let total = frame.area();
     if total.width == 0 || total.height == 0 {
         return;
     }
@@ -238,7 +238,7 @@ fn render_rename_modal(frame: &mut Frame<'_>, app: &App) {
     let paragraph = Paragraph::new(app.rename_text()).block(block);
     frame.render_widget(paragraph, area);
 
-    let inner = area.inner(&Margin::new(1, 1));
+    let inner = area.inner(Margin::new(1, 1));
     let prefix_len = app.rename_cursor().min(app.rename_text().len());
     let prefix = &app.rename_text()[..prefix_len];
     let mut cursor_width = UnicodeWidthStr::width(prefix);
@@ -248,14 +248,14 @@ fn render_rename_modal(frame: &mut Frame<'_>, app: &App) {
     }
     let cursor_x = inner.x + cursor_width as u16;
     let cursor_y = inner.y;
-    frame.set_cursor(cursor_x, cursor_y);
+    frame.set_cursor_position((cursor_x, cursor_y));
 }
 
 fn render_search_input_modal(frame: &mut Frame<'_>, app: &App) {
     if !app.is_search_input_open() {
         return;
     }
-    let total = frame.size();
+    let total = frame.area();
     if total.width == 0 || total.height == 0 {
         return;
     }
@@ -278,20 +278,20 @@ fn render_search_input_modal(frame: &mut Frame<'_>, app: &App) {
         );
     let paragraph = Paragraph::new(app.search_input_text().to_string()).block(block);
     frame.render_widget(paragraph, area);
-    let inner = area.inner(&Margin::new(1, 1));
+    let inner = area.inner(Margin::new(1, 1));
     let cursor_index = app.search_cursor().min(app.search_input_text().len());
     let prefix = &app.search_input_text()[..cursor_index];
     let cursor_width = UnicodeWidthStr::width(prefix).min(inner.width as usize);
     let cursor_x = inner.x + cursor_width as u16;
     let cursor_y = inner.y;
-    frame.set_cursor(cursor_x, cursor_y);
+    frame.set_cursor_position((cursor_x, cursor_y));
 }
 
 fn render_search_results_modal(frame: &mut Frame<'_>, app: &App) {
     if !app.is_search_results_open() {
         return;
     }
-    let total = frame.size();
+    let total = frame.area();
     if total.width == 0 || total.height == 0 {
         return;
     }

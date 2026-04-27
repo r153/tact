@@ -30,6 +30,10 @@ enum AppAction {
     ShowManual,
 }
 
+fn terminal_err<E: std::fmt::Display>(err: E) -> io::Error {
+    io::Error::other(err.to_string())
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     if std::env::args().any(|arg| arg == "--help" || arg == "-h") {
         show_manual_cli()?;
@@ -48,7 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
-    terminal.show_cursor()?;
+    terminal.show_cursor().map_err(terminal_err)?;
 
     result?;
     Ok(())
@@ -56,7 +60,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> io::Result<()> {
     loop {
-        terminal.draw(|frame| ui::render(frame, &app))?;
+        terminal
+            .draw(|frame| ui::render(frame, &app))
+            .map_err(terminal_err)?;
 
         if event::poll(Duration::from_millis(250))? {
             let evt = event::read()?;
@@ -334,14 +340,14 @@ fn open_file_in_editor<B: Backend>(
 ) -> io::Result<()> {
     disable_raw_mode()?;
     execute!(io::stdout(), LeaveAlternateScreen)?;
-    terminal.show_cursor()?;
+    terminal.show_cursor().map_err(terminal_err)?;
 
     let status = Command::new("vim").arg(path).status();
 
     execute!(io::stdout(), EnterAlternateScreen)?;
     enable_raw_mode()?;
-    terminal.hide_cursor()?;
-    terminal.clear()?;
+    terminal.hide_cursor().map_err(terminal_err)?;
+    terminal.clear().map_err(terminal_err)?;
 
     match status {
         Ok(exit) => {
@@ -362,15 +368,15 @@ fn open_file_in_editor<B: Backend>(
 fn open_shell<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
     disable_raw_mode()?;
     execute!(io::stdout(), LeaveAlternateScreen)?;
-    terminal.show_cursor()?;
+    terminal.show_cursor().map_err(terminal_err)?;
 
     let shell = std::env::var("SHELL").unwrap_or_else(|_| String::from("/bin/bash"));
     let status = Command::new(shell).current_dir(&app.current_dir).status();
 
     execute!(io::stdout(), EnterAlternateScreen)?;
     enable_raw_mode()?;
-    terminal.hide_cursor()?;
-    terminal.clear()?;
+    terminal.hide_cursor().map_err(terminal_err)?;
+    terminal.clear().map_err(terminal_err)?;
 
     match status {
         Ok(exit) => {
@@ -392,15 +398,15 @@ fn open_shell<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Resu
 fn show_manual_in_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
     disable_raw_mode()?;
     execute!(io::stdout(), LeaveAlternateScreen)?;
-    terminal.show_cursor()?;
+    terminal.show_cursor().map_err(terminal_err)?;
 
     let man_path = manual_path()?;
     let result = run_man(&man_path);
 
     execute!(io::stdout(), EnterAlternateScreen)?;
     enable_raw_mode()?;
-    terminal.hide_cursor()?;
-    terminal.clear()?;
+    terminal.hide_cursor().map_err(terminal_err)?;
+    terminal.clear().map_err(terminal_err)?;
 
     match &result {
         Ok(()) => app.status = String::from("ヘルプを閉じました"),
